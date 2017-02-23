@@ -18,7 +18,7 @@ import glob
 import sys
 
 # size of the alphabet that we work with
-ALPHASIZE = 98
+ALPHASIZE = 166
 
 
 # Specification of the supported alphabet (subset of ASCII-7)
@@ -33,13 +33,18 @@ def convert_from_alphabet(a):
     :param a: one character
     :return: the encoded value
     """
-    if a == 9:
+    if a == 9:              # 1
         return 1
     if a == 10:
-        return 127 - 30  # LF
-    elif 32 <= a <= 126:
+        return 97           # 97
+    if a == 171:
+        return 167
+    elif 32 <= a <= 126:    # 2 à 96
         return a - 30
+    elif 187 <= a <= 255:   # 98 à 166
+        return a - 89
     else:
+        print("Unknown character: %s (%d)" % (chr(a), a))
         return 0  # unknown
 
 
@@ -57,10 +62,14 @@ def convert_to_alphabet(c, avoid_tab_and_lf=False):
     """
     if c == 1:
         return 32 if avoid_tab_and_lf else 9  # space instead of TAB
-    if c == 127 - 30:
+    if c == 97:
         return 92 if avoid_tab_and_lf else 10  # \ instead of LF
+    if c == 167:
+        return 171
     if 32 <= c + 30 <= 126:
         return c + 30
+    if 187 <= c + 89 <= 255:
+        return c + 89
     else:
         return 0  # unknown
 
@@ -244,7 +253,7 @@ def read_data_files(directory, validation=True):
     """
     codetext = []
     bookranges = []
-    filelist = glob.glob(directory, recursive=True)
+    filelist = glob.glob(directory)
     for textfile in filelist:
         input_text = open(textfile, "r")
         print("Loading file " + textfile)
